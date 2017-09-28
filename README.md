@@ -11,6 +11,7 @@ The method `findLanguage` returns an iso2 language key.
 * From cookie OR
 * Matched by the `Accept-Language` header from browser. OR
 * Returns the fallbackLanguage
+
 ```php
 $availableLanguages = array( 'nl', 'de', 'cz', 'pl' );
 $languageDetection = new \NR\Utilities\LanguageDetection( $availableLanguages );
@@ -18,9 +19,9 @@ $iso2 = $languageDetection->findLanguage();
 ``` 
 
 
-
 ### set language fallback
 set a language fallback in constructor (default is 'en').
+
 ```php
 $languageDetection = new \NR\Utilities\LanguageDetection(
    $availableLanguages,
@@ -33,6 +34,7 @@ $languageDetection->fallbackLanguageIso2 = 'de';
 
 ### get the Accept-Language header from browser
 The array is sorted by the header’s quality attribute (e.g. ;q=0.8).
+
 ```php
 $languageDetection->getAcceptedLanguage();
 
@@ -47,15 +49,14 @@ Array
 */
 ```
 
-
 ## Cookie
 
 If `$cookieSupport` is true (default), the language value can be stored as a cookie. The method `findLanguage` prefers the cookie value if set.
 
 
-
 ### set available language to cookie
 If the language value ('de') is contained in `availableLanguages`, the value will be saved in the cookie.
+
 ```php
 $languageDetection->setLanguage('de');
 
@@ -65,18 +66,15 @@ echo $languageDetection->findLanguage();
 ```
 
 
-
-
 ### delete cookie
 The cookie's expiration time is set to `-1` and the global var `$_COOKIE[…]` is unset.
+
 ```php
 $languageDetection->unsetLanguage();
 ```
 
-
-
-
 ### configuration options for cookie
+
 ```php
 // defaults
 $languageDetection->cookieSupport = true;
