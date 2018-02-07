@@ -51,10 +51,10 @@ class LanguageDetection
 	 * @param array $availableLanguages
 	 * @param string $fallbackLanguageIso2
 	 */
-	public function __construct($availableLanguages, $fallbackLanguageIso2 = '') {
+	public function __construct($availableLanguages = [], $fallbackLanguageIso2 = '') {
 
 		// set available Languages Array
-		if(is_array($availableLanguages)){
+		if(count($availableLanguages)){
 			$this->availableLanguages = $availableLanguages;
 		}
 
@@ -67,7 +67,7 @@ class LanguageDetection
 	/**
 	 * Find the correct Language
 	 * 1. From Cookie
-	 * 2. From Header match with availableLangauge Array
+	 * 2. From Header match with availableLanguage Array
 	 *
 	 * @return string
 	 */
@@ -76,20 +76,15 @@ class LanguageDetection
 		// Cookie Language
 		$cookieLanguage = ( array_key_exists($this->cookieName, $_COOKIE) ) ? substr(strip_tags($_COOKIE[ $this->cookieName ]), 0, 2) : '';
 
+		// return iso2 if is in array;
 		if($this->cookieSupport && !empty($cookieLanguage)) {
-
-			// return iso2 if is in array;
 			return (in_array($cookieLanguage, $this->availableLanguages)) ? (string) $cookieLanguage : $this->fallbackLanguageIso2;
 		}
 
+		// compare accepted Languages with available Languages
 		else {
-
-			// accepted Langauges from header
 			$acceptedLanguages = $this->getAcceptedLanguage();
-
-			// Iterate all Languages from "acceptedLanguage"-Header
 			foreach($acceptedLanguages as $iso2){
-
 				$iso2 = strtolower($iso2);
 
 				// if isocode are de-de or en-gb
@@ -117,20 +112,21 @@ class LanguageDetection
 	 * @return string
 	 */
 	public function setLanguage($languageIso2){
+
+		if(!in_array($languageIso2, $this->availableLanguages)){
+			$languageIso2 = $this->fallbackLanguageIso2;
+		}
+
+		// set cookie
 		if($this->cookieSupport){
-
-			if(!in_array($languageIso2, $this->availableLanguages)){
-				$languageIso2 = $this->fallbackLanguageIso2;
-			}
-
-			// set cookie
 			setcookie ($this->cookieName, $languageIso2, $this->cookieExpire, $this->cookiePath, $this->cookieDomain, $this->cookieSecure, $this->cookieHttponly);
 			$_COOKIE[$this->cookieName] = $languageIso2;
-
 			return $languageIso2;
+		}
 
-		} else {
-			return '';
+		// do nothing
+		else {
+			return $languageIso2;
 		}
 	}
 
@@ -177,8 +173,6 @@ class LanguageDetection
 					$languagesArr[] = $languageCode;
 				}
 			}
-		} else {
-			//trigger_error('Header \'HTTP_ACCEPT_LANGUAGE\' is not set or incorrect!', E_USER_NOTICE);
 		}
 
 		return $languagesArr;
